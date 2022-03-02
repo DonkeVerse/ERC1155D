@@ -341,7 +341,10 @@ contract ERC1155 is Context, ERC165, IERC1155, IERC1155MetadataURI {
         _beforeTokenTransfer(operator, address(0), to, ids, amounts, data);
 
         for (uint256 i = 0; i < ids.length; i++) {
-            _owners[ids[i]] = to;
+            require(amounts[i] < 2, "ERC1155D: exceeds supply");
+            if (amounts[i] == 1) {
+                _owners[ids[i]] = to;
+            }
         }
 
         emit TransferBatch(operator, address(0), to, ids, amounts);
