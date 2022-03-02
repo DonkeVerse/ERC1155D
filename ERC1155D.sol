@@ -24,8 +24,6 @@ contract ERC1155 is Context, ERC165, IERC1155, IERC1155MetadataURI {
 
     address[MAX_SUPPLY] internal _owners;
 
-    //mapping(uint256 => mapping(address => uint256)) internal _balances;
-
     // Mapping from account to operator approvals
     mapping(address => mapping(address => bool)) private _operatorApprovals;
 
@@ -170,7 +168,6 @@ contract ERC1155 is Context, ERC165, IERC1155, IERC1155MetadataURI {
         bytes memory data
     ) internal virtual {
         require(to != address(0), "ERC1155: transfer to the zero address");
-        require(amount < 2, "ERC1155D: insufficient balance for transfer");
 
         address operator = _msgSender();
         uint256[] memory ids = _asSingletonArray(id);
@@ -178,7 +175,7 @@ contract ERC1155 is Context, ERC165, IERC1155, IERC1155MetadataURI {
 
         _beforeTokenTransfer(operator, from, to, ids, amounts, data);
 
-        require(_owners[id] == from, "ERC1155: insufficient balance for transfer");
+        require(_owners[id] == from && amount < 2, "ERC1155: insufficient balance for transfer");
 
         // The ERC1155 spec allows for transfering zero tokens, but we are still expected
         // to run the other checks and emit the event. But we don't want an ownership change
@@ -221,8 +218,11 @@ contract ERC1155 is Context, ERC165, IERC1155, IERC1155MetadataURI {
         for (uint256 i = 0; i < ids.length; ++i) {
             uint256 id = ids[i];
 
-            require(_owners[id] == from, "ERC1155: insufficient balance for transfer");
-            _owners[id] == to;
+            require(_owners[id] == from && amounts[i] < 2, "ERC1155: insufficient balance for transfer");
+
+            if (amounts[i] == 1) {
+                _owners[id] == to;
+            }  
         }
 
         emit TransferBatch(operator, from, to, ids, amounts);
@@ -308,7 +308,7 @@ contract ERC1155 is Context, ERC165, IERC1155, IERC1155MetadataURI {
      * This does not implement smart contract checks according to ERC1155 so it exists as a separate function
      */
 
-    function _mintSingle(address to, uint256 id) external virtual {
+    function _mintSingle(address to, uint256 id) internal virtual {
         require(to != address(0), "ERC1155: mint to the zero address");
         require(_owners[id] == address(0), "ERC1155D: supply exceeded");
         require(id < MAX_SUPPLY, "ERC1155D: invalid id");
@@ -372,8 +372,10 @@ contract ERC1155 is Context, ERC165, IERC1155, IERC1155MetadataURI {
 
         _beforeTokenTransfer(operator, from, address(0), ids, amounts, "");
 
-        require(balanceOf(from, id) == 1, "ERC1155: burn amount exceeds balance");
-        _owners[id] = address(0);
+        require(_owners[id] == from && amount < 2, "ERC1155: burn amount exceeds balance");
+        if (amount == 1) {
+            _owners[id] = address(0);
+        }
 
         emit TransferSingle(operator, from, address(0), id, amount);
 
@@ -401,9 +403,10 @@ contract ERC1155 is Context, ERC165, IERC1155, IERC1155MetadataURI {
 
         for (uint256 i = 0; i < ids.length; i++) {
             uint256 id = ids[i];
-
-            require(balanceOf(from, id) == 1, "ERC1155: burn amount exceeds balance");
-            _owners[id] = address(0);
+            require(_owners[id] == from && amounts[i] < 2, "ERC1155: burn amount exceeds balance");
+            if (amounts[i] == 1) {
+                _owners[id] = address(0);
+            }
         }
 
         emit TransferBatch(operator, from, address(0), ids, amounts);
@@ -539,7 +542,7 @@ contract ERC1155 is Context, ERC165, IERC1155, IERC1155MetadataURI {
         return _owners;
     }
 
-    function ERC721OwnerOf(uint256 id) external view returns(address) {
+    function ownerOfERC721Like(uint256 id) external view returns(address) {
         require(id < _owners.length, "ERC1155D: id exceeds maximum");
         address owner = _owners[id];
         require(owner != address(0), "ERC1155D: owner query for nonexistent token");
