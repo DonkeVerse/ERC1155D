@@ -275,6 +275,7 @@ contract ERC1155 is Context, ERC165, IERC1155, IERC1155MetadataURI {
     ) internal virtual {
         require(to != address(0), "ERC1155: mint to the zero address");
         require(amount < 2, "ERC1155D: exceeds supply");
+        require(id < MAX_SUPPLY, "ERC1155D: invalid id");
 
         address operator = _msgSender();
         uint256[] memory ids = _asSingletonArray(id);
@@ -308,13 +309,12 @@ contract ERC1155 is Context, ERC165, IERC1155, IERC1155MetadataURI {
      * This does not implement smart contract checks according to ERC1155 so it exists as a separate function
      */
 
-    function _mintSingle(address to, uint256 id) internal virtual {
-        require(to != address(0), "ERC1155: mint to the zero address");
+    function _mintSingle(address to, uint256 id) external virtual {
+        require(to != address(0), "ERC1155: mint to the zero address"); // you can remove this if only minting to msg.sender
         require(_owners[id] == address(0), "ERC1155D: supply exceeded");
-        require(id < MAX_SUPPLY, "ERC1155D: invalid id");
-        assembly {
-            sstore(add(_owners.slot, id), to)
-        }
+        require(id < MAX_SUPPLY, "ERC1155D: invalid id"); // you can remove this if the check is done outside
+
+        _owners[id] = to; // this can be made more efficient with assembly if you know what you are doing!
         emit TransferSingle(to, address(0), to, id, 1);
     }
 
@@ -342,6 +342,8 @@ contract ERC1155 is Context, ERC165, IERC1155, IERC1155MetadataURI {
 
         for (uint256 i = 0; i < ids.length; i++) {
             require(amounts[i] < 2, "ERC1155D: exceeds supply");
+            require(_owners[ids[i]] == address(0), "ERC1155D: supply exceeded");
+
             if (amounts[i] == 1) {
                 _owners[ids[i]] = to;
             }
