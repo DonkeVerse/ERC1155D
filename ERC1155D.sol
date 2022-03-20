@@ -221,7 +221,7 @@ contract ERC1155 is Context, ERC165, IERC1155, IERC1155MetadataURI {
             require(_owners[id] == from && amounts[i] < 2, "ERC1155: insufficient balance for transfer");
 
             if (amounts[i] == 1) {
-                _owners[id] == to;
+                _owners[id] = to;
             }  
         }
 
