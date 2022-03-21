@@ -1,0 +1,17 @@
+{
+  "name": "erc1155d",
+  "dependencies": {
+    "@openzeppelin/test-helpers": "^0.5.15",
+    "hardhat": "^2.9.1",
+    "@nomiclabs/hardhat-truffle5": "^2.0.5",
+    "@nomiclabs/hardhat-web3": "^2.0.0",
+    "@openzeppelin/docs-utils": "^0.1.0",
+    "chai": "^4.2.0",
+    "hardhat-gas-reporter": "^1.0.4",
+    "keccak256": "^1.0.2",
+    "prettier": "^2.3.0",
+    "prettier-plugin-solidity": "^1.0.0-beta.16",
+    "solhint": "^3.3.6",
+    "solidity-coverage": "^0.7.18"
+  }
+}
