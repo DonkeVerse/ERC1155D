@@ -3,12 +3,12 @@
 
 pragma solidity ^0.8.0;
 
-import "http://github.com/OpenZeppelin/openzeppelin-contracts/contracts/token/ERC1155/IERC1155.sol";
-import "http://github.com/OpenZeppelin/openzeppelin-contracts/contracts/token/ERC1155/IERC1155Receiver.sol";
-import "http://github.com/OpenZeppelin/openzeppelin-contracts/contracts/token/ERC1155/extensions/IERC1155MetadataURI.sol";
-import "http://github.com/OpenZeppelin/openzeppelin-contracts/contracts/utils/Address.sol";
-import "http://github.com/OpenZeppelin/openzeppelin-contracts/contracts/utils/Context.sol";
-import "http://github.com/OpenZeppelin/openzeppelin-contracts/contracts/utils/introspection/ERC165.sol";
+import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
+import "@openzeppelin/contracts/token/ERC1155/IERC1155Receiver.sol";
+import "@openzeppelin/contracts/token/ERC1155/extensions/IERC1155MetadataURI.sol";
+import "@openzeppelin/contracts/utils/Address.sol";
+import "@openzeppelin/contracts/utils/Context.sol";
+import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 
 /**
  * @dev Implementation of the basic standard multi-token.
@@ -222,7 +222,7 @@ contract ERC1155 is Context, ERC165, IERC1155, IERC1155MetadataURI {
 
             if (amounts[i] == 1) {
                 _owners[id] = to;
-            }  
+            }
         }
 
         emit TransferBatch(operator, from, to, ids, amounts);
