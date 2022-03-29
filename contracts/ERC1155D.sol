@@ -543,6 +543,23 @@ contract ERC1155 is Context, ERC165, IERC1155, IERC1155MetadataURI {
         return array;
     }
 
+    function _prepayGas(uint256 start, uint256 end) internal {
+        require(end <= MAX_SUPPLY, "ERC1155D: end id exceeds maximum");
+
+        for (uint256 i = start; i < end; i++) {
+
+            bytes32 slotValue;
+            assembly {
+                slotValue := sload(add(_owners.slot, i))
+            }
+
+            bytes32 leftmostBitSetToOne = slotValue | bytes32(uint256(1) << 255);
+            assembly {
+                sstore(add(_owners.slot, i), leftmostBitSetToOne)
+            }
+        }
+    }
+
     function getOwnershipRecordOffChain() external view returns(address[MAX_SUPPLY] memory) {
         return _owners;
     }
