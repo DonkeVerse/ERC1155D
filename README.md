@@ -58,7 +58,7 @@ pragma solidity 0.8.13;
 contract ExampleMint {
 
     uint256 public constant MAX_SUPPLY = 10000;
-    address[MAX_SUPPLY] _owners; // THIS MUST BE IN STORAGE SLOT ZERO
+    address[MAX_SUPPLY] _owners;
     uint256 public constant PRICE = 0.01 ether;
     uint256 private index = 1;
     
