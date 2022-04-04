@@ -48,3 +48,35 @@ This repo inherits the ERC1155 unit tests (hardhat-truffle) from the official Op
 
 - install the dependencies with `yarn` or `npm install`
 - Run `npx hardhat test tests/ERC1155.test.js`
+
+# Maximally efficient Implementation
+This is more for vanity metrics, but it is possible to acheive 50,432 gas with the following code. This eliminates the fallback function due to the function selector being all zeros, so if anyone sends ether directly to your contract, the transaction will revert.
+
+```solidity
+pragma solidity 0.8.13;
+
+contract ExampleMint {
+
+    uint256 public constant MAX_SUPPLY = 10000;
+    uint256 public constant PRICE = 0.01 ether;
+    uint256 private index = 1;
+    address[MAX_SUPPLY] _owners;
+    event TransferSingle(address, address, address, uint256, uint256);
+
+    function mint_efficient_1268F998() external payable {
+        require(msg.value == PRICE, "wrong price");
+        uint256 _index = index;
+        require(_index < MAX_SUPPLY, "supply limit");
+
+        emit TransferSingle(msg.sender, address(0), msg.sender, _index, 1);
+        assembly {
+            sstore(_owners.slot, _index)
+        }
+
+        unchecked {
+            _index++;
+        }
+        index = _index;
+    }
+}
+```
