@@ -58,9 +58,10 @@ pragma solidity 0.8.13;
 contract ExampleMint {
 
     uint256 public constant MAX_SUPPLY = 10000;
+    address[MAX_SUPPLY] _owners; // THIS MUST BE IN STORAGE SLOT ZERO
     uint256 public constant PRICE = 0.01 ether;
     uint256 private index = 1;
-    address[MAX_SUPPLY] _owners;
+    
     event TransferSingle(address, address, address, uint256, uint256);
 
     function mint_efficient_1268F998() external payable {
@@ -70,7 +71,7 @@ contract ExampleMint {
 
         emit TransferSingle(msg.sender, address(0), msg.sender, _index, 1);
         assembly {
-            sstore(_owners.slot, caller())
+            sstore(add(_owners.slot, _index), caller())
         }
 
         unchecked {
