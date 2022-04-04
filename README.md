@@ -50,7 +50,7 @@ This repo inherits the ERC1155 unit tests (hardhat-truffle) from the official Op
 - Run `npx hardhat test tests/ERC1155.test.js`
 
 # Maximally efficient Implementation
-This is more for vanity metrics, but it is possible to acheive 50,432 gas with the following code. This eliminates the fallback function due to the function selector being all zeros, so if anyone sends ether directly to your contract, the transaction will revert.
+This is more for vanity metrics, but it is possible to acheive 50,434 gas with the following code. This eliminates the fallback function due to the function selector being all zeros, so if anyone sends ether directly to your contract, the transaction will revert.
 
 ```solidity
 pragma solidity 0.8.13;
@@ -70,7 +70,7 @@ contract ExampleMint {
 
         emit TransferSingle(msg.sender, address(0), msg.sender, _index, 1);
         assembly {
-            sstore(_owners.slot, _index)
+            sstore(_owners.slot, caller())
         }
 
         unchecked {
